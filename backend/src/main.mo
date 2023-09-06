@@ -58,6 +58,10 @@ actor {
     #ok(())
   };
 
+  public query({caller}) func isCreated(handle: Text): async Bool {
+    TrieSet.mem<Text>(handles, handle, Text.hash(handle), Text.equal)
+  };
+
   public query({caller}) func getKickByHandle(handle: Text): async ?Nat {
     switch(kickMap.get(handle)) {
       case(?cnt) { return ?cnt };

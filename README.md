@@ -88,4 +88,8 @@
 
 - 需要记录每天用户已经点击过的次数， 以及每天后清空
 
-- 数据排序 前or后？
+https://xavue-zaaaa-aaaan-qa24a-cai.icp0.io/
+
+https://www.a4z.cn/fe/2019/09/12/three-js-3d-anime/
+
+https://threejs.org/examples/#webgl_loader_collada_skinning

@@ -28,6 +28,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat))],
         ['query'],
       ),
+    'isCreated' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'kick' : IDL.Func([IDL.Text], [Result], []),
     'kiss' : IDL.Func([IDL.Text], [Result], []),
   });
