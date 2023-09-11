@@ -30,7 +30,7 @@ const App: React.FC = () => {
             <div style={{display: 'flex',}}>
             <div onClick={handleGoToHomePage} style={{
                 color: 'black'
-            }}>kick-your-ass</div>
+            }}>KISS OR KICK</div>
             {/* <div 
                 style={{
                     marginLeft: '50px',

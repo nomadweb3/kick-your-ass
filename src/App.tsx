@@ -39,6 +39,16 @@ const contentStyle: React.CSSProperties = {
 function App() {
   const agent = new HttpAgent(AGENT_OPTIONS);
   const actor = Actor.createActor(backendIDL, { agent, canisterId: CANISTER_ID });
+  const [reloadKissRanking, setReloadKissRanking] = useState(0);
+  const [reloadKickRanking, setReloadKickRanking] = useState(0);
+
+  const handleSetReloadKissRanking = () => {
+    setReloadKissRanking(reloadKissRanking + 1);
+  };
+
+  const handleSetReloadKickRanking = () => {
+    setReloadKickRanking(reloadKickRanking + 1);
+  };
 
   const homePage =  (
     <div className="App">
@@ -58,9 +68,12 @@ function App() {
         />
         <Content style={contentStyle}>
 
-          <KissRanking/>
-          <TwitterCard/>
-          <KickRanking/>
+          <KissRanking reloadKissRanking={reloadKickRanking} />
+          <TwitterCard
+            handleSetReloadKissRanking={handleSetReloadKissRanking}
+            handleSetReloadKickRanking={handleSetReloadKickRanking}
+          />
+          <KickRanking reloadKickRanking={reloadKickRanking} />
 
           {/* {importSuccess && (
             <div className="twitter-card-container">
@@ -82,7 +95,7 @@ function App() {
           </div> */}
 
         </Content>
-        <Footer />
+        {/* <Footer /> */}
       </Layout>
     </div>
   );
@@ -91,9 +104,9 @@ function App() {
       <Route path='' element = {
         homePage
       }/>
-      <Route path='ranking' element = {
+      {/* <Route path='ranking' element = {
         <KissRanking/>
-      }/>
+      }/> */}
       <Route path='*' element = {
         <NotFoundPage/>
       }/>

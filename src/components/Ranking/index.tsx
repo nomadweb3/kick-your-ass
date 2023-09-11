@@ -6,6 +6,9 @@ import { Actor, HttpAgent } from '@dfinity/agent';
 import { idlFactory as backendIDL } from '../../dids/backend.did';
 import { ColumnsType } from 'antd/es/table';
 import { render } from '@testing-library/react';
+import InfoCard from '../Basic/InfoCard';
+import avartPNG from '../../assets/avatar.png';
+import  { UserTwitterInfo, fetchUserTwitterInfo } from '../TwitterCard';
 
 const { Content } = Layout;
 const CANISTER_ID = 'ybqqu-5qaaa-aaaan-qeaua-cai'; 
@@ -13,9 +16,19 @@ const AGENT_OPTIONS = { host: 'https://ic0.app' };
 const agent = new HttpAgent(AGENT_OPTIONS);
 const actor = Actor.createActor(backendIDL, { agent, canisterId: CANISTER_ID });
 
+// const userTwitterInfoMap = new Map<string, UserTwitterInfo>();
+// async function getALLUserTwitterInfo(data: [string, bigint][]) {
+//     console.log('data : ', data);
+//     for(const item of data) {
+//         if(userTwitterInfoMap.has(item[0])) continue;
+//         const result = await fetchUserTwitterInfo(item[0]);
+//         console.log('%s : ', item[0], result);
+//         if(result != null) userTwitterInfoMap.set(item[0], result);
+//     }
+// }
+
 const layOutStyle: React.CSSProperties = {
     height: '100%',
-
 };
 
 const contentStyle: React.CSSProperties = {
@@ -24,6 +37,25 @@ const contentStyle: React.CSSProperties = {
     flexDirection: 'column',
     justifyContent: 'center',
 };
+
+// interface InfoCardWrapperProps {
+//     name: string;
+// }
+  
+// const InfoCardWrapper: React.FC<InfoCardWrapperProps> = ({ name }) => {
+//     const [userTwitterInfo, setUserTwitterInfo] = useState<UserTwitterInfo | null>();
+  
+//     useEffect(() => {
+//       const fetchData = async () => {
+//         const result = await fetchUserTwitterInfo(name);
+//         console.log('InfoCardWrapper : ', name, result);
+//         setUserTwitterInfo(result);
+//       };
+
+//       fetchData();
+//     }, [name]);
+//     return <InfoCard avatarUrl={userTwitterInfo ? userTwitterInfo.profilePicUrl : avartPNG} name={name} />;
+// };
 
 interface DataType {
     key: string;
@@ -43,8 +75,32 @@ const columns: ColumnsType<DataType> = [
         title: 'Twitter Info',
         dataIndex: 'name',
         key: 'name',
-        width: 100,
-        align: 'center'
+        width: 150,
+        align: 'center',
+        render: (name) => {
+            // if (userTwitterInfoMap.has(name)) {
+            //     const result = userTwitterInfoMap.get(name);
+            //     if(result != undefined) {
+            //         return (
+            //             <InfoCard avatarUrl={result.profilePicUrl} name={name} />
+            //         );
+            //     }
+            // };
+            
+            return (
+                // <InfoCard avatarUrl={avartPNG} name={name} />
+                <div style={{
+                    color: '#000',
+                    fontFamily: 'Inter',
+                    fontSize: '16px',
+                    fontStyle: 'normal',
+                    fontWeight: '400',
+                    lineHeight: '24px', /* 150% */
+                }}>
+                    {name}
+                </div>
+            );
+        }
     },
     {
         title: 'Kiss Count',
@@ -55,7 +111,13 @@ const columns: ColumnsType<DataType> = [
     }
 ]
 
-const KissRanking: React.FC = () => {
+interface KissRankingProps {
+    reloadKissRanking: number;
+}
+
+const KissRanking: React.FC<KissRankingProps> = (
+    reloadKissRanking,
+) => {
     const [kissData, setKissData] = useState<[string, bigint][]>([]);
     const [dataLoaded, setDataLoaded] = useState<boolean>(true); // 添加数据加载完成状态
 
@@ -66,13 +128,15 @@ const KissRanking: React.FC = () => {
             setKissData(kissArray);
             console.log('kissArray : ', kissArray);
             setDataLoaded(false); // 数据加载完成后设置状态为true
+            console.log('getALLUserTwitterInfo : ', kissArray);
+            // getALLUserTwitterInfo(kissArray)
           } catch (error) {
             console.error('获取排序后的数据失败:', error);
           }
         };
 
         fetchData(); //确保在挂载时立即加载数据
-    }, []); 
+    }, [reloadKissRanking]); 
 
     return (
         <Table
@@ -90,7 +154,7 @@ const KissRanking: React.FC = () => {
                 })
             }
             pagination={false}
-            scroll={{y: 400}} 
+            scroll={{y: 600}} 
             title={
                 () => <span style={{
                     color: '#000',
@@ -107,14 +171,20 @@ const KissRanking: React.FC = () => {
             loading={dataLoaded}
             size='middle'
             style={{
-                width: '300px',
+                width: '320px',
                 marginLeft: '80px',
             }}
         />
     )
 }
 
-export const KickRanking: React.FC = () => {
+interface KickRankingProps {
+    reloadKickRanking: number;
+};
+
+export const KickRanking: React.FC<KickRankingProps> = (
+    reloadKickRanking
+) => {
     const [kickData, setKickData] = useState<[string, bigint][]>([]);
     const [dataLoaded, setDataLoaded] = useState<boolean>(true); // 添加数据加载完成状态
 
@@ -125,13 +195,13 @@ export const KickRanking: React.FC = () => {
             setKickData(kickArray);
             console.log('kickArray : ', kickArray);
             setDataLoaded(false); // 数据加载完成后设置状态为true
+            // getALLUserTwitterInfo(kickArray)
           } catch (error) {
             console.error('获取排序后的数据失败:', error);
           }
         };
-
         fetchData(); //确保在挂载时立即加载数据
-    }, []); 
+    }, [reloadKickRanking]); 
 
     return (
         <Table
@@ -149,7 +219,7 @@ export const KickRanking: React.FC = () => {
                 })
             }
             pagination={false}
-            scroll={{y: 400}} 
+            scroll={{y: 600}} 
             title={
                 () => <span style={{
                     color: '#000',
@@ -166,7 +236,7 @@ export const KickRanking: React.FC = () => {
             loading={dataLoaded}
             size='middle'
             style={{
-                width: '300px',
+                width: '320px',
                 marginRight: '80px',
             }}
         />
