@@ -14,11 +14,22 @@ actor {
     #AlreadyCreated;
     #NotFoundTheHandle;
   };
+  type TwitterMetaData = Types.TwitterMetaData;
 
   // Text(Twitter Handle) -> Nat
   let kickMap = TrieMap.TrieMap<Text, Nat>(Text.equal, Text.hash);
   let kissMap = TrieMap.TrieMap<Text, Nat>(Text.equal, Text.hash);
+  let twitterInfos = TrieMap.TrieMap<Text, TwitterMetaData>(Text.equal, Text.hash);
+
   stable var handles = TrieSet.empty<Text>();
+
+  public shared({caller}) func updateUserTwitterInfo(userName: Text, profilePicURL: Text): async Result.Result<(), Error> {
+    twitterInfos.put(userName, ({
+      userName = userName;
+      profilePicURL = profilePicURL;
+    }));
+    #ok(())
+  };
 
   public shared({caller}) func create(handle: Text): async Result.Result<(), Error> {
     if(TrieSet.mem<Text>(handles, handle, Text.hash(handle), Text.equal)) {
@@ -56,6 +67,28 @@ actor {
       };
     };
     #ok(())
+  };
+
+  public query({caller}) func getUserTwitterPicURL(userName: Text): async ?Text {
+    switch(twitterInfos.get(userName)) {
+      case(?metaData) {
+        return ?metaData.profilePicURL;
+      };
+      case(null) { return null;};
+    };
+    null
+  };
+
+  public query({caller}) func isHaveTwitterInfo(userName: Text): async Bool {
+    switch(twitterInfos.get(userName)) {
+      case(?metadata) {
+        return true;
+      };
+      case(null) {
+        return false;
+      };
+    };
+    false
   };
 
   public query({caller}) func isCreated(handle: Text): async Bool {

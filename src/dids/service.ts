@@ -13,7 +13,10 @@ export interface _SERVICE {
   'getKissByHandle' : ActorMethod<[string], [] | [bigint]>,
   'getKisssFromLargeToSmall' : ActorMethod<[], Array<[string, bigint]>>,
   'getKisssFromSmallToLarge' : ActorMethod<[], Array<[string, bigint]>>,
+  'getUserTwitterPicURL' : ActorMethod<[string], [] | [string]>,
   'isCreated' : ActorMethod<[string], boolean>,
+  'isHaveTwitterInfo' : ActorMethod<[string], boolean>,
   'kick' : ActorMethod<[string], Result>,
   'kiss' : ActorMethod<[string], Result>,
+  'updateUserTwitterInfo' : ActorMethod<[string, string], Result>,
 }

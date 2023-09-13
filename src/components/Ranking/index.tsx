@@ -16,17 +16,6 @@ const AGENT_OPTIONS = { host: 'https://ic0.app' };
 const agent = new HttpAgent(AGENT_OPTIONS);
 const actor = Actor.createActor(backendIDL, { agent, canisterId: CANISTER_ID });
 
-// const userTwitterInfoMap = new Map<string, UserTwitterInfo>();
-// async function getALLUserTwitterInfo(data: [string, bigint][]) {
-//     console.log('data : ', data);
-//     for(const item of data) {
-//         if(userTwitterInfoMap.has(item[0])) continue;
-//         const result = await fetchUserTwitterInfo(item[0]);
-//         console.log('%s : ', item[0], result);
-//         if(result != null) userTwitterInfoMap.set(item[0], result);
-//     }
-// }
-
 const layOutStyle: React.CSSProperties = {
     height: '100%',
 };
@@ -38,28 +27,12 @@ const contentStyle: React.CSSProperties = {
     justifyContent: 'center',
 };
 
-// interface InfoCardWrapperProps {
-//     name: string;
-// }
-  
-// const InfoCardWrapper: React.FC<InfoCardWrapperProps> = ({ name }) => {
-//     const [userTwitterInfo, setUserTwitterInfo] = useState<UserTwitterInfo | null>();
-  
-//     useEffect(() => {
-//       const fetchData = async () => {
-//         const result = await fetchUserTwitterInfo(name);
-//         console.log('InfoCardWrapper : ', name, result);
-//         setUserTwitterInfo(result);
-//       };
-
-//       fetchData();
-//     }, [name]);
-//     return <InfoCard avatarUrl={userTwitterInfo ? userTwitterInfo.profilePicUrl : avartPNG} name={name} />;
-// };
-
 interface DataType {
     key: string;
-    name: string;
+    userInfo: {
+        name: string;
+        profilePicURL: string;
+    };
     value: string;
 }
 
@@ -73,32 +46,15 @@ const columns: ColumnsType<DataType> = [
     },
     {
         title: 'Twitter Info',
-        dataIndex: 'name',
-        key: 'name',
+        dataIndex: 'userInfo',
+        key: 'userInfo',
         width: 150,
         align: 'center',
-        render: (name) => {
-            // if (userTwitterInfoMap.has(name)) {
-            //     const result = userTwitterInfoMap.get(name);
-            //     if(result != undefined) {
-            //         return (
-            //             <InfoCard avatarUrl={result.profilePicUrl} name={name} />
-            //         );
-            //     }
-            // };
-            
+        render: (info) => {
+            console.log('info.profilePicURL ', info.profilePicURL);
             return (
-                // <InfoCard avatarUrl={avartPNG} name={name} />
-                <div style={{
-                    color: '#000',
-                    fontFamily: 'Inter',
-                    fontSize: '16px',
-                    fontStyle: 'normal',
-                    fontWeight: '400',
-                    lineHeight: '24px', /* 150% */
-                }}>
-                    {name}
-                </div>
+                
+                <InfoCard avatarUrl={info.profilePicURL} name={info.name} />
             );
         }
     },
@@ -120,7 +76,7 @@ const KissRanking: React.FC<KissRankingProps> = (
 ) => {
     const [kissData, setKissData] = useState<[string, bigint][]>([]);
     const [dataLoaded, setDataLoaded] = useState<boolean>(true); // 添加数据加载完成状态
-
+    const [dataSourece, setDataSource] = useState<DataType[]>([]);
     useEffect(() => {
         const fetchData = async () => {
           try {
@@ -128,8 +84,35 @@ const KissRanking: React.FC<KissRankingProps> = (
             setKissData(kissArray);
             console.log('kissArray : ', kissArray);
             setDataLoaded(false); // 数据加载完成后设置状态为true
-            console.log('getALLUserTwitterInfo : ', kissArray);
-            // getALLUserTwitterInfo(kissArray)
+
+            const userInfoPromises = kissArray.map(async ([userName, value], index) => {
+                const profilePicURL = await actor.getUserTwitterPicURL(userName) as [string];
+                if(profilePicURL.length > 0) {
+                    const item = {
+                        index: index + 1,
+                        key: index.toString(),
+                        userInfo: {
+                            name: userName,
+                            profilePicURL: profilePicURL[0],
+                        },
+                        value: value.toString(),
+                    };
+                    return item;
+                } else {
+                    const item = {
+                        index: index + 1,
+                        key: index.toString(),
+                        userInfo: {
+                            name: userName,
+                            profilePicURL: avartPNG,
+                        },
+                        value: value.toString(),
+                    };
+                    return item;
+                };
+            });
+            const _dataSourece: DataType[] = await Promise.all(userInfoPromises);
+            setDataSource(_dataSourece);
           } catch (error) {
             console.error('获取排序后的数据失败:', error);
           }
@@ -141,18 +124,7 @@ const KissRanking: React.FC<KissRankingProps> = (
     return (
         <Table
             columns={columns}
-            dataSource={
-                kissData.map(([name, value], index) => {
-                    const item = {
-                        index: index + 1,
-                        key: index.toString(),
-                        name,
-                        value: value.toString(),
-                    };
-                    // console.log('item : ', item);
-                    return item;
-                })
-            }
+            dataSource={dataSourece}
             pagination={false}
             scroll={{y: 600}} 
             title={
@@ -187,6 +159,7 @@ export const KickRanking: React.FC<KickRankingProps> = (
 ) => {
     const [kickData, setKickData] = useState<[string, bigint][]>([]);
     const [dataLoaded, setDataLoaded] = useState<boolean>(true); // 添加数据加载完成状态
+    const [dataSourece, setDataSource] = useState<DataType[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -195,7 +168,35 @@ export const KickRanking: React.FC<KickRankingProps> = (
             setKickData(kickArray);
             console.log('kickArray : ', kickArray);
             setDataLoaded(false); // 数据加载完成后设置状态为true
-            // getALLUserTwitterInfo(kickArray)
+
+            const userInfoPromises = kickArray.map(async ([userName, value], index) => {
+                const profilePicURL = await actor.getUserTwitterPicURL(userName) as [string];
+                if(profilePicURL.length > 0) {
+                    const item = {
+                        index: index + 1,
+                        key: index.toString(),
+                        userInfo: {
+                            name: userName,
+                            profilePicURL: profilePicURL[0],
+                        },
+                        value: value.toString(),
+                    };
+                    return item;
+                } else {
+                    const item = {
+                        index: index + 1,
+                        key: index.toString(),
+                        userInfo: {
+                            name: userName,
+                            profilePicURL: avartPNG,
+                        },
+                        value: value.toString(),
+                    };
+                    return item;
+                };
+            });
+            const _dataSourece: DataType[] = await Promise.all(userInfoPromises);
+            setDataSource(_dataSourece);
           } catch (error) {
             console.error('获取排序后的数据失败:', error);
           }
@@ -206,18 +207,7 @@ export const KickRanking: React.FC<KickRankingProps> = (
     return (
         <Table
             columns={columns}
-            dataSource={
-                kickData.map(([name, value], index) => {
-                    const item = {
-                        index: index + 1,
-                        key: index.toString(),
-                        name,
-                        value: value.toString(),
-                    };
-                    // console.log('item : ', item);
-                    return item;
-                })
-            }
+            dataSource={dataSourece}
             pagination={false}
             scroll={{y: 600}} 
             title={

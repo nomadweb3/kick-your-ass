@@ -38,7 +38,7 @@ export async function fetchUserTwitterInfo(twitterHandle: string): Promise<UserT
       'X-RapidAPI-Host': 'twitter154.p.rapidapi.com'
     }
   };
-  
+
   try {
     const response = await axios.request(options);
     const userTwitterInfo: UserTwitterInfo = {
@@ -53,6 +53,15 @@ export async function fetchUserTwitterInfo(twitterHandle: string): Promise<UserT
   }
 }
 
+async function getUserTwitterPicURL(name: string) {
+  const result = await actor.getUserTwitterPicURL(name) as [string];
+  if(result.length > 0) {
+    return result[0];
+  } else {
+    return avatarPNG;
+  }
+}
+
 const TwitterCard: React.FC<TwitterCardProps> = ({
   handleSetReloadKissRanking,
   handleSetReloadKickRanking,
@@ -61,7 +70,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
   const [kickCount, setKickCount] = useState(0); // 初始化 kickCount
   const [kissCount, setKissCount] = useState(0); // 初始化 kissCount
   const [importSuccess, setImportSuccess] = useState(false); // 新增状态来标志是否成功导入
-  const [userTwitterInfo, setUserTwitterInfo] = useState<UserTwitterInfo | null>(null); // 新增状态来标志是否成功导入
+  const [userProfilePicURL, setUserProfilePicURL] = useState<string | null>(null);
 
   const handleTwitterHandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTwitterHandle(e.target.value);
@@ -82,17 +91,32 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
       toast.warning('Input empty twitter handle !');
       return;
     }
+    toast.info('Importing Twitter Handle !');
     // 查询是否已经导入
     const isCreatedResult = await actor.isCreated(twitterHandle);
-    console.log('isCreatedResult : ', isCreatedResult);
-    queryTheHandleCount();
-    const fetchUserTwitterInfoResult = await fetchUserTwitterInfo(twitterHandle);
-    if(fetchUserTwitterInfo == null || fetchUserTwitterInfoResult?.profilePicUrl == null) {
-      toast.error('Invalid Twitter Handle');
-      return;
+    // console.log('isCreatedResult : ', isCreatedResult);
+    
+    queryTheHandleCount(); // 获取当前的kick和kiss值
+
+    // 是否已经有用户的Twitter MetaData
+    const isHaveTwitterMetaData = await actor.isHaveTwitterInfo(twitterHandle);
+
+    // 没有则从api 抓取 Twitter MetaData
+    if(!isHaveTwitterMetaData) {
+      const fetchUserTwitterInfoResult = await fetchUserTwitterInfo(twitterHandle);
+      if(fetchUserTwitterInfoResult != null) {
+        const updateUserTwitterInfoResult = await actor.updateUserTwitterInfo(
+          fetchUserTwitterInfoResult.username,
+          fetchUserTwitterInfoResult.profilePicUrl,
+        ) as FuncResult;
+        setUserProfilePicURL(fetchUserTwitterInfoResult.profilePicUrl);
+      } else {
+        toast.error('Invalid Twitter Handle Or Get User Twitter MetaData Error');
+      }
     } else {
-      setUserTwitterInfo(fetchUserTwitterInfoResult);
-    };
+      setUserProfilePicURL(await getUserTwitterPicURL(twitterHandle));
+    }
+
     if(isCreatedResult) {
       setImportSuccess(true);
       queryTheHandleCount(); 
@@ -100,7 +124,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
       return;
     } else {
       // 导入handle
-      toast.info('Importing Twitter Handle !');
+      // toast.info('Importing Twitter Handle !');
       const createResult = await actor.create(twitterHandle) as FuncResult;
       console.log('createResult : ', createResult);
       if('ok' in createResult) {
@@ -158,7 +182,6 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
           </div>
         <div className='meta'>
           <img className='avatar' 
-            // src={userTwitterInfo ? userTwitterInfo.profilePicUrl : avatarPNG}
             src={avatarPNG} 
             alt='avatar'
           />
@@ -203,7 +226,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
           <div className='kiss-kick-container'>
             <div className='box'>
               <InfoCard 
-                avatarUrl={userTwitterInfo ? userTwitterInfo.profilePicUrl : avatarPNG} 
+                avatarUrl={userProfilePicURL ? userProfilePicURL : avatarPNG} 
                 name={twitterHandle} 
               />
             </div>
@@ -222,7 +245,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
           <div className='kiss-kick-container'>
             <div className='box'>
               <InfoCard 
-                avatarUrl={userTwitterInfo ? userTwitterInfo.profilePicUrl : avatarPNG} 
+                avatarUrl={userProfilePicURL ? userProfilePicURL : avatarPNG} 
                 name={twitterHandle} 
               />
             </div>
