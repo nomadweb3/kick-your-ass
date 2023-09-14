@@ -51,7 +51,7 @@ const columns: ColumnsType<DataType> = [
         width: 150,
         align: 'center',
         render: (info) => {
-            console.log('info.profilePicURL ', info.profilePicURL);
+            // console.log('info.profilePicURL ', info.profilePicURL);
             return (
                 
                 <InfoCard avatarUrl={info.profilePicURL} name={info.name} />

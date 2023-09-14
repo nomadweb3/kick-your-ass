@@ -14,6 +14,8 @@ import avatarPNG from "../../assets/avatar.png";
 import InfoCard from "../Basic/InfoCard";
 import axios from "axios";
 import anime from "animejs/lib/anime.es.js";
+import { useIdentity } from "../../context/IdentityContext";
+import { act } from "react-dom/test-utils";
 
 interface TwitterCardProps {
   handleSetReloadKissRanking: () => void;
@@ -21,10 +23,6 @@ interface TwitterCardProps {
 }
 
 const CANISTER_ID = "ybqqu-5qaaa-aaaan-qeaua-cai";
-const AGENT_OPTIONS = { host: "https://ic0.app" };
-const agent = new HttpAgent(AGENT_OPTIONS);
-const actor = Actor.createActor(backendIDL, { agent, canisterId: CANISTER_ID });
-
 export interface UserTwitterInfo {
   username: string;
   profilePicUrl: string;
@@ -59,7 +57,8 @@ export async function fetchUserTwitterInfo(
   }
 }
 
-async function getUserTwitterPicURL(name: string) {
+async function getUserTwitterPicURL(name: string, actor: any) {
+
   const result = (await actor.getUserTwitterPicURL(name)) as [string];
   if (result.length > 0) {
     return result[0];
@@ -79,6 +78,33 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
   const [userProfilePicURL, setUserProfilePicURL] = useState<string | null>(
     null
   );
+  const { identity } = useIdentity();
+  // console.log('twitter card identity : ', identity);
+
+  const getIdentityActor = () => {
+    if(identity != null) {
+      const actor = Actor.createActor(backendIDL, {
+        agent: new HttpAgent({
+          host: "https://ic0.app",
+          identity: identity,
+        }),
+        canisterId: CANISTER_ID,
+      });
+      return actor;
+    } else {
+      toast.error('please Login !');
+      return null;
+    };
+  };
+
+  const getNoIdentiyActor = () => {
+    return Actor.createActor(backendIDL, {
+      agent: new HttpAgent({
+        host: "https://ic0.app",
+      }),
+      canisterId: CANISTER_ID,
+    })
+  };
 
   const handleTwitterHandleChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -88,8 +114,9 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
 
   const queryTheHandleCount = async () => {
     if (twitterHandle == "") return;
-    const kickResult = await actor.getKickByHandle(twitterHandle);
-    const kissResult = await actor.getKissByHandle(twitterHandle);
+    const noIdentityActor = getNoIdentiyActor();
+    const kickResult = await noIdentityActor.getKickByHandle(twitterHandle);
+    const kissResult = await noIdentityActor.getKissByHandle(twitterHandle);
     console.log("getKickByHandle result : ", kickResult);
     console.log("getKissByHandle result : ", kissResult);
     setKickCount(Number(kickResult));
@@ -103,13 +130,14 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     }
     toast.info("Importing Twitter Handle !");
     // 查询是否已经导入
-    const isCreatedResult = await actor.isCreated(twitterHandle);
+    const noIdentityActor = getNoIdentiyActor();
+    const isCreatedResult = await noIdentityActor.isCreated(twitterHandle);
     // console.log('isCreatedResult : ', isCreatedResult);
 
     queryTheHandleCount(); // 获取当前的kick和kiss值
 
     // 是否已经有用户的Twitter MetaData
-    const isHaveTwitterMetaData = await actor.isHaveTwitterInfo(twitterHandle);
+    const isHaveTwitterMetaData = await noIdentityActor.isHaveTwitterInfo(twitterHandle);
 
     // 没有则从api 抓取 Twitter MetaData
     if (!isHaveTwitterMetaData) {
@@ -117,7 +145,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
         twitterHandle
       );
       if (fetchUserTwitterInfoResult != null) {
-        const updateUserTwitterInfoResult = (await actor.updateUserTwitterInfo(
+        const updateUserTwitterInfoResult = (await noIdentityActor.updateUserTwitterInfo(
           fetchUserTwitterInfoResult.username,
           fetchUserTwitterInfoResult.profilePicUrl
         )) as FuncResult;
@@ -128,7 +156,8 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
         );
       }
     } else {
-      setUserProfilePicURL(await getUserTwitterPicURL(twitterHandle));
+
+      setUserProfilePicURL(await getUserTwitterPicURL(twitterHandle, noIdentityActor));
     }
 
     if (isCreatedResult) {
@@ -139,7 +168,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     } else {
       // 导入handle
       // toast.info('Importing Twitter Handle !');
-      const createResult = (await actor.create(twitterHandle)) as FuncResult;
+      const createResult = (await noIdentityActor.create(twitterHandle)) as FuncResult;
       console.log("createResult : ", createResult);
       if ("ok" in createResult) {
         setImportSuccess(true);
@@ -155,8 +184,13 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
   };
 
   const onKissFace = async () => {
+    const identityActor = getIdentityActor();
+    if(identityActor == null) return;
+
     toast.info("Kiss ing !");
-    const kissResult = (await actor.kiss(twitterHandle)) as FuncResult;
+    console.log('kiss identity : ', identity?.getPrincipal().toString());
+
+    const kissResult = (await identityActor.kiss(twitterHandle)) as FuncResult;
     console.log("Kiss : ", kissResult);
     if ("ok" in kissResult) {
       queryTheHandleCount();
@@ -169,8 +203,14 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
 
   const onKickAss = async () => {
     animateCSS(".avatar", "hinge");
+
+    const identityActor = getIdentityActor();
+    if(identityActor == null) return;
+
     toast.info("Kick ing !");
-    const kickResult = (await actor.kick(twitterHandle)) as FuncResult;
+    console.log('kick identity : ', identity?.getPrincipal().toString());
+
+    const kickResult = (await identityActor.kick(twitterHandle)) as FuncResult;
     console.log("Kick : ", kickResult);
     if ("ok" in kickResult) {
       queryTheHandleCount();
@@ -355,7 +395,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
           </div>
         </div>
       )}
-      {importSuccess && (
+      {/* {importSuccess && (
         <div className="kiss-kick-container">
           <div className="box">
             <InfoCard
@@ -371,7 +411,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
             <div className="title">KICK</div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

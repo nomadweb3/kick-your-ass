@@ -17,6 +17,7 @@ import KissRanking, { KickRanking } from './components/Ranking';
 import NotFoundPage from './components/NotFoundPage';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import { IdentityProvider } from './context/IdentityContext';
 
 const { Content } = Layout;
 const CANISTER_ID = 'ybqqu-5qaaa-aaaan-qeaua-cai'; 
@@ -100,17 +101,19 @@ function App() {
     </div>
   );
   return (
-    <Routes>
-      <Route path='' element = {
-        homePage
-      }/>
-      {/* <Route path='ranking' element = {
-        <KissRanking/>
-      }/> */}
-      <Route path='*' element = {
-        <NotFoundPage/>
-      }/>
-    </Routes>
+    <IdentityProvider>
+      <Routes>
+        <Route path='' element = {
+          homePage
+        }/>
+        {/* <Route path='ranking' element = {
+          <KissRanking/>
+        }/> */}
+        <Route path='*' element = {
+          <NotFoundPage/>
+        }/>
+      </Routes>
+    </IdentityProvider>
   )
 }
 
