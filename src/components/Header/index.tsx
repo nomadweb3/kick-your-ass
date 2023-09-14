@@ -51,12 +51,12 @@ const App: React.FC<HeaderProps> = () => {
             authClient.login({
                 onSuccess: resolve,
                 onError: reject,
-            }).then(async () => {
-                const identity = authClient.getIdentity();
-                setIdentity(identity);
-                console.log('principal : ', identity.getPrincipal().toString());
-                setIsLogin(true);
             });
+        }).then(() => {
+            const identity = authClient.getIdentity();
+            setIdentity(identity);
+            console.log('principal : ', identity.getPrincipal().toString());
+            setIsLogin(true);
         });
     };
 
@@ -97,7 +97,7 @@ const App: React.FC<HeaderProps> = () => {
                 </Button> */}
             <Drawer title="User Info" placement="right" onClose={onClose} open={open}>
                 <p>Address : </p>
-                {identity?.getPrincipal().toString()}InfoCircleOutlined
+                {identity?.getPrincipal().toString()}
                 <p>Activity : </p>
                 <p>Invitation : </p>
             </Drawer>
