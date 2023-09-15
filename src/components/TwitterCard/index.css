@@ -2,6 +2,12 @@
     width: 15%;
 }
 
+.mylove{
+  height: 100px;
+  color: red;
+  display: none;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -109,6 +115,7 @@
     align-items: center;
     justify-content: end;
     gap: 8px;
+    cursor: pointer;
   }
   
   .twitterCard .button .kick {
@@ -120,7 +127,12 @@
     border-radius: 8px;
     border: 2px solid var(--Black, #000);
     background: #000;
+    cursor: pointer;
   }
+  .twitterCard .button .kick span{
+    color:white
+  }
+
   
   .twitterCard .button .kick .title {
     color: #FFF;
@@ -141,19 +153,26 @@
     align-items: center;
     gap: 8px;
     border-radius: 8px;
-    background: #F4511E;
+    background: white;
+    border-color: #F4511E;
+    border: 1px solid;
+    cursor: pointer;
   }
   
+  .twitterCard .button .kiss {
+    color: #F4511E;
+  }
+
   .twitterCard .button .kiss .title {
-    color: var(--White, #FFF);
+    /* color: var(--White, #FFF); */
     text-align: center;
-    
     /* Button */
     font-family: Inter;
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
     line-height: 24px; /* 150% */
+    color: #F4511E;
 }
 
 .recently {

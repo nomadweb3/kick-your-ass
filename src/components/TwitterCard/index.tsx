@@ -58,7 +58,6 @@ export async function fetchUserTwitterInfo(
 }
 
 async function getUserTwitterPicURL(name: string, actor: any) {
-
   const result = (await actor.getUserTwitterPicURL(name)) as [string];
   if (result.length > 0) {
     return result[0];
@@ -82,7 +81,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
   // console.log('twitter card identity : ', identity);
 
   const getIdentityActor = () => {
-    if(identity != null) {
+    if (identity != null) {
       const actor = Actor.createActor(backendIDL, {
         agent: new HttpAgent({
           host: "https://ic0.app",
@@ -92,9 +91,9 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
       });
       return actor;
     } else {
-      toast.error('please Login !');
+      toast.error("please Login !");
       return null;
-    };
+    }
   };
 
   const getNoIdentiyActor = () => {
@@ -103,7 +102,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
         host: "https://ic0.app",
       }),
       canisterId: CANISTER_ID,
-    })
+    });
   };
 
   const handleTwitterHandleChange = (
@@ -137,7 +136,9 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     queryTheHandleCount(); // 获取当前的kick和kiss值
 
     // 是否已经有用户的Twitter MetaData
-    const isHaveTwitterMetaData = await noIdentityActor.isHaveTwitterInfo(twitterHandle);
+    const isHaveTwitterMetaData = await noIdentityActor.isHaveTwitterInfo(
+      twitterHandle
+    );
 
     // 没有则从api 抓取 Twitter MetaData
     if (!isHaveTwitterMetaData) {
@@ -145,10 +146,11 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
         twitterHandle
       );
       if (fetchUserTwitterInfoResult != null) {
-        const updateUserTwitterInfoResult = (await noIdentityActor.updateUserTwitterInfo(
-          fetchUserTwitterInfoResult.username,
-          fetchUserTwitterInfoResult.profilePicUrl
-        )) as FuncResult;
+        const updateUserTwitterInfoResult =
+          (await noIdentityActor.updateUserTwitterInfo(
+            fetchUserTwitterInfoResult.username,
+            fetchUserTwitterInfoResult.profilePicUrl
+          )) as FuncResult;
         setUserProfilePicURL(fetchUserTwitterInfoResult.profilePicUrl);
       } else {
         toast.error(
@@ -156,8 +158,9 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
         );
       }
     } else {
-
-      setUserProfilePicURL(await getUserTwitterPicURL(twitterHandle, noIdentityActor));
+      setUserProfilePicURL(
+        await getUserTwitterPicURL(twitterHandle, noIdentityActor)
+      );
     }
 
     if (isCreatedResult) {
@@ -168,7 +171,9 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     } else {
       // 导入handle
       // toast.info('Importing Twitter Handle !');
-      const createResult = (await noIdentityActor.create(twitterHandle)) as FuncResult;
+      const createResult = (await noIdentityActor.create(
+        twitterHandle
+      )) as FuncResult;
       console.log("createResult : ", createResult);
       if ("ok" in createResult) {
         setImportSuccess(true);
@@ -184,11 +189,14 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
   };
 
   const onKissFace = async () => {
+    // animateCSS(".mylove", "rubberBand");
+    animateCSS(".mylove", "zoomIn", false);
+    animateCSS(".mylove", "zoomOut", false);
     const identityActor = getIdentityActor();
-    if(identityActor == null) return;
+    if (identityActor == null) return;
 
     toast.info("Kiss ing !");
-    console.log('kiss identity : ', identity?.getPrincipal().toString());
+    console.log("kiss identity : ", identity?.getPrincipal().toString());
 
     const kissResult = (await identityActor.kiss(twitterHandle)) as FuncResult;
     console.log("Kiss : ", kissResult);
@@ -205,10 +213,10 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     animateCSS(".avatar", "hinge");
 
     const identityActor = getIdentityActor();
-    if(identityActor == null) return;
+    if (identityActor == null) return;
 
     toast.info("Kick ing !");
-    console.log('kick identity : ', identity?.getPrincipal().toString());
+    console.log("kick identity : ", identity?.getPrincipal().toString());
 
     const kickResult = (await identityActor.kick(twitterHandle)) as FuncResult;
     console.log("Kick : ", kickResult);
@@ -221,16 +229,24 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     }
   };
 
-  const animateCSS = (element: any, animation: any, prefix = "animate__") =>
+  const animateCSS = (
+    element: any,
+    animation: any,
+    needHidden = true,
+    prefix = "animate__"
+  ) =>
     new Promise((resolve, reject) => {
       const animationName = `${prefix}${animation}`;
       const node = document.querySelector(element);
+      node.style.display = "block";
 
       node.classList.add(`${prefix}animated`, animationName);
 
       function handleAnimationEnd(event: { stopPropagation: () => void }) {
         event.stopPropagation();
         node.classList.remove(`${prefix}animated`, animationName);
+        needHidden && (node.style.display = "none");
+
         resolve("Animation ended");
       }
 
@@ -314,18 +330,23 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
             />
           </div>
           <div className="meta">
-            <img className="avatar" src={avatarPNG} alt="avatar" />
+            <div>
+              <img className="avatar" src={avatarPNG} alt="avatar" />
+              <span className="icon iconfont mylove">&#xe665;</span>
+            </div>
             <button className="importButton" onClick={handleImportClick}>
               <div className="title">Import</div>
             </button>
           </div>
         </div>
         <div className="button">
-          <button className="kick" onClick={onKickAss}>
-            <div className="title shake">KICK ASS</div>
+          <button className="kick shake" onClick={onKickAss}>
+            <span className="icon iconfont">&#xe671;</span>
+            <div className="title">KICK ASS</div>
           </button>
-          <button className="kiss" onClick={onKissFace}>
-            <div className="title shake-chunk">KISS FACE</div>
+          <button className="kiss shake-chunk" onClick={onKissFace}>
+            <span className="icon iconfont">&#xe665;</span>
+            <div className="title ">KISS FACE</div>
           </button>
         </div>
       </div>

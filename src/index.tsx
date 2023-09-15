@@ -6,6 +6,7 @@ import "animate.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router } from "react-router-dom";
+// import "./assets/font_6oapmeefl85/iconfont.js";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
