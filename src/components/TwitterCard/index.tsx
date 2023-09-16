@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./index.css";
 import { Button, Space, notification } from "antd";
 import { Actor, HttpAgent } from "@dfinity/agent";
@@ -190,8 +190,10 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
 
   const onKissFace = async () => {
     // animateCSS(".mylove", "rubberBand");
-    animateCSS(".mylove", "zoomIn", false);
-    animateCSS(".mylove", "zoomOut", false);
+    animateCSS(".mylove", "heartBeat", true).then(() => {
+      // animateCSS(".mylove", "zoomOut", true);
+    });
+
     const identityActor = getIdentityActor();
     if (identityActor == null) return;
 
@@ -210,7 +212,11 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
   };
 
   const onKickAss = async () => {
-    animateCSS(".avatar", "hinge");
+    animateCSS(".myFoot", "backInRight", true).then(() => {
+      animateCSS(".avatar", "hinge", false).then(() => {
+        // animateCSS(".avatar", "zoomIn", false);
+      });
+    });
 
     const identityActor = getIdentityActor();
     if (identityActor == null) return;
@@ -229,6 +235,42 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     }
   };
 
+  let ufo = 0;
+
+  const animateCSS2 = (
+    element: any,
+    animation: any,
+    needHidden = true,
+    // nextAnimate: any = () => {},
+    prefix = "animate__"
+  ) =>
+    new Promise((resolve, reject) => {
+      const animationName = `${prefix}${animation}`;
+      const node = document.querySelector(element);
+      node.style.display = "block";
+
+      ++ufo;
+      console.log("add", animationName, ufo);
+
+      // node.classList.remove(`${prefix}animated`, animationName);
+      node.classList.add(`${prefix}animated`, animationName);
+
+      async function handleAnimationEnd(event: {
+        stopPropagation: () => void;
+      }) {
+        event.stopPropagation();
+        console.log("remove", animationName, ufo);
+        node.classList.remove(`${prefix}animated`, animationName);
+        // await nextAnimate();
+        needHidden && (node.style.display = "none");
+        resolve("Animation ended");
+      }
+
+      node.addEventListener("animationend", handleAnimationEnd, {
+        once: true,
+      });
+    });
+
   const animateCSS = (
     element: any,
     animation: any,
@@ -238,19 +280,33 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     new Promise((resolve, reject) => {
       const animationName = `${prefix}${animation}`;
       const node = document.querySelector(element);
+
       node.style.display = "block";
 
+      ++ufo;
+      console.log("add", animationName, ufo);
+
+      // 移除旧的动画
+      node.classList.remove(`${prefix}animated`, animationName);
+
+      // 移除旧的事件监听器
+      node.removeEventListener("animationend", handleAnimationEnd);
+
+      // 添加新的动画
       node.classList.add(`${prefix}animated`, animationName);
 
       function handleAnimationEnd(event: { stopPropagation: () => void }) {
         event.stopPropagation();
+        console.log("remove", animationName, ufo);
         node.classList.remove(`${prefix}animated`, animationName);
         needHidden && (node.style.display = "none");
-
         resolve("Animation ended");
       }
 
-      node.addEventListener("animationend", handleAnimationEnd, { once: true });
+      // 添加新的事件监听器
+      node.addEventListener("animationend", handleAnimationEnd, {
+        once: true,
+      });
     });
 
   // const _revealVert = (bottomY, easing, delay) => ({
@@ -261,37 +317,39 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
   // });
 
   //chick icon animation
-  let chickJumpAnimation;
+  useEffect(() => {
+    let chickJumpAnimation;
 
-  const jumpKeyframes = {
-    scaleY: [
-      { value: 0.9, duration: 170 },
-      { value: 1, duration: 170, delay: 120 },
-    ],
-    translateY: [
-      { value: -20, duration: 170, delay: 170 },
-      { value: 0, duration: 170, delay: 220 },
-    ],
-  };
+    const jumpKeyframes = {
+      scaleY: [
+        { value: 0.9, duration: 170 },
+        { value: 1, duration: 170, delay: 120 },
+      ],
+      translateY: [
+        { value: -20, duration: 170, delay: 170 },
+        { value: 0, duration: 170, delay: 220 },
+      ],
+    };
 
-  const targetElement = ".avatar";
-  const chickIconAnimation = anime({
-    targets: `${targetElement}`,
-    // ..._revealVert(25, "easeOutElastic", 100),
+    // const targetElement = ".avatar";
+    // const chickIconAnimation = anime({
+    //   targets: `${targetElement}`,
+    //   // ..._revealVert(25, "easeOutElastic", 100),
 
-    complete: function () {
-      const chick = document.querySelector(targetElement) as HTMLElement;
-      if (chick !== null && chick.style !== null) {
-        chick.style.transformOrigin = "center bottom";
-      }
-      chickJumpAnimation = anime({
-        targets: `${targetElement}`,
-        ...jumpKeyframes,
-        loop: true,
-        easing: "linear",
-      });
-    },
-  });
+    //   complete: function () {
+    //     const chick = document.querySelector(targetElement) as HTMLElement;
+    //     if (chick !== null && chick.style !== null) {
+    //       chick.style.transformOrigin = "center bottom";
+    //     }
+    //     chickJumpAnimation = anime({
+    //       targets: `${targetElement}`,
+    //       ...jumpKeyframes,
+    //       loop: true,
+    //       easing: "linear",
+    //     });
+    //   },
+    // });
+  }, []);
 
   return (
     <div className="container">
@@ -330,9 +388,14 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
             />
           </div>
           <div className="meta">
-            <div>
+            <div className="avatar-container">
               <img className="avatar" src={avatarPNG} alt="avatar" />
-              <span className="icon iconfont mylove">&#xe665;</span>
+              <div className="myLoveC">
+                <span className="icon iconfont mylove">&#xe665;</span>
+              </div>
+              <div className="myFootC">
+                <span className="icon iconfont myFoot">&#xe671;</span>
+              </div>
             </div>
             <button className="importButton" onClick={handleImportClick}>
               <div className="title">Import</div>
