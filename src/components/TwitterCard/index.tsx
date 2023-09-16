@@ -331,24 +331,24 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
       ],
     };
 
-    // const targetElement = ".avatar";
-    // const chickIconAnimation = anime({
-    //   targets: `${targetElement}`,
-    //   // ..._revealVert(25, "easeOutElastic", 100),
+    const targetElement = ".avatar";
+    const chickIconAnimation = anime({
+      targets: `${targetElement}`,
+      // ..._revealVert(25, "easeOutElastic", 100),
 
-    //   complete: function () {
-    //     const chick = document.querySelector(targetElement) as HTMLElement;
-    //     if (chick !== null && chick.style !== null) {
-    //       chick.style.transformOrigin = "center bottom";
-    //     }
-    //     chickJumpAnimation = anime({
-    //       targets: `${targetElement}`,
-    //       ...jumpKeyframes,
-    //       loop: true,
-    //       easing: "linear",
-    //     });
-    //   },
-    // });
+      complete: function () {
+        const chick = document.querySelector(targetElement) as HTMLElement;
+        if (chick !== null && chick.style !== null) {
+          chick.style.transformOrigin = "center bottom";
+        }
+        chickJumpAnimation = anime({
+          targets: `${targetElement}`,
+          ...jumpKeyframes,
+          loop: true,
+          easing: "linear",
+        });
+      },
+    });
   }, []);
 
   return (
