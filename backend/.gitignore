@@ -21,3 +21,5 @@ dist/
 .env
 
 test_canister/target
+
+.mops
