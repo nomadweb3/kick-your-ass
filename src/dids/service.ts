@@ -1,10 +1,13 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
-export type Error = { 'AlreadyCreated' : null } |
-  { 'NotFoundTheHandle' : null };
+export type Error = { 'ClickAmountNotEnough' : null } |
+  { 'AlreadyCreated' : null } |
+  { 'NotFoundTheHandle' : null } |
+  { 'AnonymousCaller' : null };
 export type Result = { 'ok' : null } |
   { 'err' : Error };
+export type Time = bigint;
 export interface _SERVICE {
   'create' : ActorMethod<[string], Result>,
   'getKickByHandle' : ActorMethod<[string], [] | [bigint]>,
@@ -16,7 +19,7 @@ export interface _SERVICE {
   'getUserTwitterPicURL' : ActorMethod<[string], [] | [string]>,
   'isCreated' : ActorMethod<[string], boolean>,
   'isHaveTwitterInfo' : ActorMethod<[string], boolean>,
-  'kick' : ActorMethod<[string], Result>,
-  'kiss' : ActorMethod<[string], Result>,
+  'kick' : ActorMethod<[string, Time], Result>,
+  'kiss' : ActorMethod<[string, Time], Result>,
   'updateUserTwitterInfo' : ActorMethod<[string, string], Result>,
 }

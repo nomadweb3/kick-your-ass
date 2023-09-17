@@ -6,6 +6,9 @@ import { AuthClient  } from '@dfinity/auth-client';
 import { HttpAgent, Actor, Identity } from '@dfinity/agent';
 import { idlFactory as backendIDL } from '../../dids/backend.did';
 import { useIdentity } from '../../context/IdentityContext';
+import { Modal } from '@douyinfe/semi-ui';
+import LogoICSVG from '../../assets/logoIC.svg';
+import LogoNFIDPNG from '../../assets/logoNFID.png';
 
 const { Header, Content, Footer } = Layout;
 
@@ -26,6 +29,7 @@ const App: React.FC<HeaderProps> = () => {
     const { identity, setIdentity } = useIdentity();
     const [isLogin, setIsLogin] = useState(false);
     const [open, setOpen] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const showDrawer = () => {
       setOpen(true);
@@ -39,14 +43,37 @@ const App: React.FC<HeaderProps> = () => {
         navigate('/');
     };
 
-    const handleGoToRankingPage = () => {
-      navigate('/ranking');
+    const handleClick = () => {
+        setModalVisible(true);
+    };
+    
+    const handleOk = () => {
+        setModalVisible(false);
     };
 
-    const handleLogin = async() => {
+    const handleIILogin = async() => {
         
         const authClient = await AuthClient.create();
 
+        await new Promise<void>((resolve, reject) => {
+            authClient.login({
+                onSuccess: resolve,
+                onError: reject,
+            });
+        }).then(() => {
+            const identity = authClient.getIdentity();
+            setIdentity(identity);
+            console.log('principal : ', identity.getPrincipal().toString());
+            setIsLogin(true);
+        });
+    };
+
+    const handleNFIDLogin = async () => {
+        const authClient = await AuthClient.create();
+        const APPLICATION_NAME = "kissORkick";
+        const APPLICATION_LOGO_URL = "https%3A%2F%2Flogo.clearbit.com%2Fclearbit.com";
+      
+        const AUTH_PATH = "/authenticate/?applicationName="+APPLICATION_NAME+"&applicationLogo="+APPLICATION_LOGO_URL+"#authorize";
         await new Promise<void>((resolve, reject) => {
             authClient.login({
                 onSuccess: resolve,
@@ -67,16 +94,59 @@ const App: React.FC<HeaderProps> = () => {
                 color: 'black'
             }}>KISS OR KICK</div>
             </div>
-            {(!isLogin) && 
-                (<Button 
+
+            {(!isLogin) && (
+                <div>
+                <Button 
                     type="primary" 
                     shape="round" 
                     style={{backgroundColor: 'black',}}
                     icon={<WalletOutlined />} 
-                    onClick={handleLogin} >
+                    onClick={handleClick} >
                     Connect Wallet
-                </Button>)
+                </Button>
+                <Modal
+                    title="Connect Web3 Identity"
+                    visible={modalVisible}
+                    onOk={handleOk}
+                    hasCancel={false}
+                    okType='tertiary'
+                    okText='Close'
+                    closable={false}
+                >
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '80px',
+                        paddingTop: '20px',
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }} onClick={handleIILogin}>
+                            <img src={LogoICSVG} style={{
+                            }}/>
+                            <p>Internet Identity</p>
+                        </div>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }} onClick={handleNFIDLogin}>
+                            <img src={LogoNFIDPNG} style={{
+                                width: '102px',
+
+                            }}/>
+                            <p>NFID</p>
+                        </div>
+                    </div>
+
+                </Modal>
+                </div>
+                )
             }
+
             {isLogin && 
                 (<Button 
                     type="primary" 
@@ -87,14 +157,7 @@ const App: React.FC<HeaderProps> = () => {
                     Wallet
                 </Button>)
             }
-            {/* <Button 
-                    type="primary" 
-                    shape="round" 
-                    style={{backgroundColor: 'black',}}
-                    icon={<WalletOutlined />} 
-                    onClick={showDrawer} >
-                    Wallet
-                </Button> */}
+
             <Drawer title="User Info" placement="right" onClose={onClose} open={open}>
                 <p>Address : </p>
                 {identity?.getPrincipal().toString()}

@@ -10,7 +10,7 @@ import {
   Result as FuncResult,
   Error as canisterFuncError,
 } from "../../dids/service";
-import avatarPNG from "../../assets/avatar.png";
+import avatarPNG from "../../assets/logo.jpg";
 import InfoCard from "../Basic/InfoCard";
 import axios from "axios";
 import anime from "animejs/lib/anime.es.js";
@@ -200,7 +200,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     toast.info("Kiss ing !");
     console.log("kiss identity : ", identity?.getPrincipal().toString());
 
-    const kissResult = (await identityActor.kiss(twitterHandle)) as FuncResult;
+    const kissResult = (await identityActor.kiss(twitterHandle, Date.now() * 1e6)) as FuncResult;
     console.log("Kiss : ", kissResult);
     if ("ok" in kissResult) {
       queryTheHandleCount();
@@ -224,7 +224,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     toast.info("Kick ing !");
     console.log("kick identity : ", identity?.getPrincipal().toString());
 
-    const kickResult = (await identityActor.kick(twitterHandle)) as FuncResult;
+    const kickResult = (await identityActor.kick(twitterHandle, Date.now() * 1e6)) as FuncResult;
     console.log("Kick : ", kickResult);
     if ("ok" in kickResult) {
       queryTheHandleCount();

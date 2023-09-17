@@ -31,7 +31,8 @@ actor {
   let clickInfos = TrieMap.fromEntries<Principal, TrieSet.Set<ClickData>>(clickInfos_entries.vals(), Principal.equal, Principal.hash);
   let userClickAmoutMap = TrieMap.fromEntries<Principal, ClickAmoutMetaData>(userClickAmoutMap_entries.vals(),Principal.equal, Principal.hash);
 
-  stable let DAY_CLICK_AMOUNT = 3: Nat;
+  // stable let DAY_CLICK_AMOUNT = 3: Nat;
+  stable var DAY_CLICK_AMOUNT = 10: Nat; //测试
   stable var handles = TrieSet.empty<Text>();
 
   public shared({caller}) func updateUserTwitterInfo(userName: Text, profilePicURL: Text): async Result.Result<(), Error> {
@@ -156,6 +157,8 @@ actor {
     Array.sort(kissEntries, Types.compareLargeToSmall)
   };
 
+  public query({caller}) func get_DAY_CLICK_AMOUNT(): async Nat { DAY_CLICK_AMOUNT };
+
   private func isAnonymous(caller: Principal): Bool {
     Principal.isAnonymous(caller)
   };
@@ -220,7 +223,7 @@ actor {
     switch(userClickAmoutMap.get(user)) {
       case(null) { return true}; // 没有点击过，可以点击
       case(?metaData) {
-        // 点击过但小于3次，可以直接点击
+        // 点击过但小于DAY_CLICK_AMOUNT次，可以直接点击
         if(metaData.amount < DAY_CLICK_AMOUNT) { 
           return true;
         } else {
@@ -256,6 +259,7 @@ actor {
     twitterInfos_entries := [];
     clickInfos_entries := [];
     userClickAmoutMap_entries := [];
+    DAY_CLICK_AMOUNT := 3; // 测试用
   };
 
 };
