@@ -10,12 +10,11 @@ import {
   Result as FuncResult,
   Error as canisterFuncError,
 } from "../../dids/service";
-import avatarPNG from "../../assets/logo.jpg";
+import avatarPNG from "../../assets/logo.jpeg";
 import InfoCard from "../Basic/InfoCard";
 import axios from "axios";
 import anime from "animejs/lib/anime.es.js";
 import { useIdentity } from "../../context/IdentityContext";
-import { act } from "react-dom/test-utils";
 
 interface TwitterCardProps {
   handleSetReloadKissRanking: () => void;

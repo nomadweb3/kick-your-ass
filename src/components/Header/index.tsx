@@ -52,7 +52,6 @@ const App: React.FC<HeaderProps> = () => {
     };
 
     const handleIILogin = async() => {
-        
         const authClient = await AuthClient.create();
 
         await new Promise<void>((resolve, reject) => {
@@ -61,6 +60,7 @@ const App: React.FC<HeaderProps> = () => {
                 onError: reject,
             });
         }).then(() => {
+            console.log('use II Login');
             const identity = authClient.getIdentity();
             setIdentity(identity);
             console.log('principal : ', identity.getPrincipal().toString());
@@ -71,15 +71,21 @@ const App: React.FC<HeaderProps> = () => {
     const handleNFIDLogin = async () => {
         const authClient = await AuthClient.create();
         const APPLICATION_NAME = "kissORkick";
-        const APPLICATION_LOGO_URL = "https%3A%2F%2Flogo.clearbit.com%2Fclearbit.com";
-      
+        const APPLICATION_LOGO_URL = "https://kh4t2-waaaa-aaaal-qbhbq-cai.raw.ic0.app/file/c4LHgkmhwQ3O6mhJ9ZB2M";
         const AUTH_PATH = "/authenticate/?applicationName="+APPLICATION_NAME+"&applicationLogo="+APPLICATION_LOGO_URL+"#authorize";
+        const NFID_AUTH_URL = "https://nfid.one" + AUTH_PATH;
         await new Promise<void>((resolve, reject) => {
             authClient.login({
+                identityProvider: NFID_AUTH_URL,
                 onSuccess: resolve,
                 onError: reject,
+                windowOpenerFeatures:
+                    `left=${window.screen.width / 2 - 525 / 2}, `+
+                    `top=${window.screen.height / 2 - 705 / 2},` +
+                    `toolbar=0,location=0,menubar=0,width=525,height=705`,
             });
         }).then(() => {
+            console.log('use NFID Login');
             const identity = authClient.getIdentity();
             setIdentity(identity);
             console.log('principal : ', identity.getPrincipal().toString());
@@ -136,7 +142,6 @@ const App: React.FC<HeaderProps> = () => {
                         }} onClick={handleNFIDLogin}>
                             <img src={LogoNFIDPNG} style={{
                                 width: '102px',
-
                             }}/>
                             <p>NFID</p>
                         </div>
