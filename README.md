@@ -23,13 +23,18 @@ We are excited about the potential of Kick-Your-Ass in the crypto community. By 
 1. Install dfx: https://internetcomputer.org/docs/current/developer-docs/setup/install/#installing-the-ic-sdk-1
 2. Install npm: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
 3. Init back-end canister service
-	1. cd backend/
-	2. dfx start --background
-	3. dfx deploy
+```shell
+cd backend/
+dfx start --background
+dfx deploy
+```
 4. Init front-end canister service
-	1. create a new shell terminal
-	2. npm install 
-	3. npm run start
+   
+   First, create a new shell terminal
+```shell
+npm install
+npm run start
+```
 
 ## Canisters ID
 - Front-end: **xavue-zaaaa-aaaan-qa24a-cai**
