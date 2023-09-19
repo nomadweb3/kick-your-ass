@@ -17,3 +17,24 @@ Kick-Your-Ass is an innovative tool designed to address the emotional value of i
 2. NFT Minting - Minting NFTs capturing the moment a Twitter handle receives its first ass-kicking. Users can save and share these moments, adding potential commemorative value. For instance, an NFT capturing Elon Musk's first ass-kicking could be valued at 100 ICP.
 
 We are excited about the potential of Kick-Your-Ass in the crypto community. By providing a unique platform for expressing emotions and generating commemorative NFTs, we aim to enhance user engagement and create an interactive environment.
+
+## How to use
+
+1. Install dfx: https://internetcomputer.org/docs/current/developer-docs/setup/install/#installing-the-ic-sdk-1
+2. Install npm: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
+3. Init back-end canister service
+	1. cd backend/
+	2. dfx start --background
+	3. dfx deploy
+4. Init front-end canister service
+	1. create a new shell terminal
+	2. npm install 
+	3. npm run start
+
+## Canisters ID
+- Front-end: **xavue-zaaaa-aaaan-qa24a-cai**
+- Back-end: **ybqqu-5qaaa-aaaan-qeaua-cai**
+
+## Mainnet
+
+- https://xavue-zaaaa-aaaan-qa24a-cai.icp0.io/
