@@ -3,14 +3,12 @@ import { Button, Layout, Drawer } from 'antd';
 import { WalletOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom'
 import { AuthClient  } from '@dfinity/auth-client';
-import { HttpAgent, Actor, Identity } from '@dfinity/agent';
-import { idlFactory as backendIDL } from '../../dids/backend.did';
 import { useIdentity } from '../../context/IdentityContext';
 import { Modal } from '@douyinfe/semi-ui';
 import LogoICSVG from '../../assets/logoIC.svg';
 import LogoNFIDPNG from '../../assets/logoNFID.png';
 
-const { Header, Content, Footer } = Layout;
+const { Header } = Layout;
 
 const headerStyle: React.CSSProperties = {
     color: 'white',
@@ -51,9 +49,22 @@ const App: React.FC<HeaderProps> = () => {
         setModalVisible(false);
     };
 
+    const handleAuthenticated = (authClient: AuthClient) => {
+        console.log('Already Logined');
+        const identity = authClient.getIdentity();
+        setIdentity(identity);
+        console.log('principal : ', identity.getPrincipal().toString());
+        setIsLogin(true);
+    };
+
     const handleIILogin = async() => {
         const authClient = await AuthClient.create();
 
+        if(await authClient.isAuthenticated()) {
+            handleAuthenticated(authClient);
+            return;
+        };
+        
         await new Promise<void>((resolve, reject) => {
             authClient.login({
                 onSuccess: resolve,
@@ -70,10 +81,17 @@ const App: React.FC<HeaderProps> = () => {
 
     const handleNFIDLogin = async () => {
         const authClient = await AuthClient.create();
+
+        if(await authClient.isAuthenticated()) {
+            handleAuthenticated(authClient);
+            return;
+        };
+
         const APPLICATION_NAME = "kissORkick";
         const APPLICATION_LOGO_URL = "https://kh4t2-waaaa-aaaal-qbhbq-cai.raw.ic0.app/file/c4LHgkmhwQ3O6mhJ9ZB2M";
         const AUTH_PATH = "/authenticate/?applicationName="+APPLICATION_NAME+"&applicationLogo="+APPLICATION_LOGO_URL+"#authorize";
         const NFID_AUTH_URL = "https://nfid.one" + AUTH_PATH;
+        
         await new Promise<void>((resolve, reject) => {
             authClient.login({
                 identityProvider: NFID_AUTH_URL,

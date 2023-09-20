@@ -31,8 +31,7 @@ actor {
   let clickInfos = TrieMap.fromEntries<Principal, TrieSet.Set<ClickData>>(clickInfos_entries.vals(), Principal.equal, Principal.hash);
   let userClickAmoutMap = TrieMap.fromEntries<Principal, ClickAmoutMetaData>(userClickAmoutMap_entries.vals(),Principal.equal, Principal.hash);
 
-  // stable let DAY_CLICK_AMOUNT = 3: Nat;
-  stable var DAY_CLICK_AMOUNT = 10: Nat; //测试
+  stable var DAY_CLICK_AMOUNT: Nat = 3;
   stable var handles = TrieSet.empty<Text>();
 
   public shared({caller}) func updateUserTwitterInfo(userName: Text, profilePicURL: Text): async Result.Result<(), Error> {
@@ -95,6 +94,26 @@ actor {
       };
     };
     #ok(())
+  };
+
+  public query({caller}) func getTotalKickAmount(): async Nat {
+    var amount: Nat = 0;
+    for(v in kickMap.vals()) {
+      amount += v;
+    };
+    amount
+  };
+
+  public query({caller}) func getTotalUserAmount(): async Nat {
+    Iter.size(clickInfos.keys())
+  };
+
+  public query({caller}) func getTotalKissAmount(): async Nat {
+    var amount: Nat = 0;
+    for(v in kissMap.vals()) {
+      amount += v;
+    };
+    amount
   };
 
   public query({caller}) func getUserTwitterPicURL(userName: Text): async ?Text {
@@ -259,7 +278,7 @@ actor {
     twitterInfos_entries := [];
     clickInfos_entries := [];
     userClickAmoutMap_entries := [];
-    DAY_CLICK_AMOUNT := 3; // 测试用
+    DAY_CLICK_AMOUNT := 20;
   };
 
 };

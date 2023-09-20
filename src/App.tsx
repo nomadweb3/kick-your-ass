@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import TwitterCard from './components/TwitterCard';
-import KickAssButton from './components/KickAssButton';
-import KissFaceButton from './components/KissFaceButton';
-import RankingTab from './components/RankingTab';
 import { Actor, HttpAgent } from '@dfinity/agent'; 
 import { idlFactory as backendIDL } from './dids/backend.did';
 import { Result as CreateResult, Error as canisterFuncError } from './dids/service';
@@ -18,7 +15,8 @@ import NotFoundPage from './components/NotFoundPage';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { IdentityProvider } from './context/IdentityContext';
-
+import StatisticCompoent from './components/Statistic';
+import { useIdentity } from './context/IdentityContext';
 const { Content } = Layout;
 const CANISTER_ID = 'ybqqu-5qaaa-aaaan-qeaua-cai'; 
 const AGENT_OPTIONS = { host: 'https://ic0.app' }; 
@@ -68,33 +66,27 @@ function App() {
             theme="colored"
         />
         <Content style={contentStyle}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'end',
+            height: '100%',
+            paddingBottom: '100px',
+          }}>
+            <KissRanking reloadKissRanking={reloadKickRanking} />
+            <div style={{
+              marginTop: '100px',
+            }}>
+              <StatisticCompoent/> 
+            </div>
+          </div>
 
-          <KissRanking reloadKissRanking={reloadKickRanking} />
           <TwitterCard
             handleSetReloadKissRanking={handleSetReloadKissRanking}
             handleSetReloadKickRanking={handleSetReloadKickRanking}
           />
           <KickRanking reloadKickRanking={reloadKickRanking} />
-
-          {/* {importSuccess && (
-            <div className="twitter-card-container">
-              <TwitterCard
-                handle={twitterHandle}
-                avatarUrl='https://unssi-hiaaa-aaaah-qcmya-cai.raw.icp0.io/?tokenid=qgy7e-xikor-uwiaa-aaaaa-b4atg-aaqca-aabhz-q'
-                kissCount={kissCount} 
-                kickCount={kickCount} 
-                queryTheHandleCount={queryTheHandleCount}
-              />
-            </div>
-          )} */}
-
-          {/* <div className="ranking-container">
-            <RankingTab name='Kick Ranking'rankingData={kickData}/>
-          </div>
-          <div className="ranking-container">
-            <RankingTab name='Kiss Ranking'rankingData={kissData}/>
-          </div> */}
-
         </Content>
         {/* <Footer /> */}
       </Layout>

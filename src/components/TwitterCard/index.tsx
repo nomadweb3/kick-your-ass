@@ -152,9 +152,9 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
           )) as FuncResult;
         setUserProfilePicURL(fetchUserTwitterInfoResult.profilePicUrl);
       } else {
-        toast.error(
-          "Invalid Twitter Handle Or Get User Twitter MetaData Error"
-        );
+        // toast.error(
+        //   "Invalid Twitter Handle Or Get User Twitter MetaData Error"
+        // );
       }
     } else {
       setUserProfilePicURL(
