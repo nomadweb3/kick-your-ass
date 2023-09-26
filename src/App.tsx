@@ -15,8 +15,9 @@ import NotFoundPage from './components/NotFoundPage';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { IdentityProvider } from './context/IdentityContext';
-import StatisticCompoent from './components/Statistic';
 import { useIdentity } from './context/IdentityContext';
+import Dashboard from './components/Dashboard';
+
 const { Content } = Layout;
 const CANISTER_ID = 'ybqqu-5qaaa-aaaan-qeaua-cai'; 
 const AGENT_OPTIONS = { host: 'https://ic0.app' }; 
@@ -66,22 +67,7 @@ function App() {
             theme="colored"
         />
         <Content style={contentStyle}>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'end',
-            height: '100%',
-            paddingBottom: '100px',
-          }}>
-            <KissRanking reloadKissRanking={reloadKickRanking} />
-            <div style={{
-              marginTop: '100px',
-            }}>
-              <StatisticCompoent/> 
-            </div>
-          </div>
-
+          <KissRanking reloadKissRanking={reloadKickRanking} />
           <TwitterCard
             handleSetReloadKissRanking={handleSetReloadKissRanking}
             handleSetReloadKickRanking={handleSetReloadKickRanking}
@@ -98,9 +84,9 @@ function App() {
         <Route path='' element = {
           homePage
         }/>
-        {/* <Route path='ranking' element = {
-          <KissRanking/>
-        }/> */}
+        <Route path='dashboard' element = {
+          <Dashboard/>
+        }/>
         <Route path='*' element = {
           <NotFoundPage/>
         }/>

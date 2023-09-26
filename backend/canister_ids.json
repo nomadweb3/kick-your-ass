@@ -1,5 +1,8 @@
 {
     "backend": {
       "ic": "ybqqu-5qaaa-aaaan-qeaua-cai"
+    },
+    "backend-dev": {
+      "ic": "ijkbc-niaaa-aaaan-qczna-cai"
     }
   }

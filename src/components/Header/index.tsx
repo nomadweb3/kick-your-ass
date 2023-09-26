@@ -9,15 +9,6 @@ import LogoICSVG from '../../assets/logoIC.svg';
 import LogoNFIDPNG from '../../assets/logoNFID.png';
 
 const { Header } = Layout;
-
-const headerStyle: React.CSSProperties = {
-    color: 'white',
-    fontSize: '30px',
-    backgroundColor: 'white',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-}
 interface HeaderProps {
 
 }
@@ -41,6 +32,10 @@ const App: React.FC<HeaderProps> = () => {
         navigate('/');
     };
 
+    const handleGoToDashBoardPage = () => {
+        navigate('/dashboard');
+    };
+
     const handleClick = () => {
         setModalVisible(true);
     };
@@ -50,10 +45,10 @@ const App: React.FC<HeaderProps> = () => {
     };
 
     const handleAuthenticated = (authClient: AuthClient) => {
-        console.log('Already Logined');
+        // console.log('Already Logined');
         const identity = authClient.getIdentity();
         setIdentity(identity);
-        console.log('principal : ', identity.getPrincipal().toString());
+        // console.log('principal : ', identity.getPrincipal().toString());
         setIsLogin(true);
     };
 
@@ -71,10 +66,10 @@ const App: React.FC<HeaderProps> = () => {
                 onError: reject,
             });
         }).then(() => {
-            console.log('use II Login');
+            // console.log('use II Login');
             const identity = authClient.getIdentity();
             setIdentity(identity);
-            console.log('principal : ', identity.getPrincipal().toString());
+            // console.log('principal : ', identity.getPrincipal().toString());
             setIsLogin(true);
         });
     };
@@ -112,11 +107,29 @@ const App: React.FC<HeaderProps> = () => {
     };
 
     return(
-        <Header style={headerStyle}>
-            <div style={{display: 'flex',}}>
-            <div onClick={handleGoToHomePage} style={{
-                color: 'black'
-            }}>KISS OR KICK</div>
+        <Header style={{
+            color: 'white',
+            fontSize: '30px',
+            backgroundColor: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        }}>
+            <div style={{
+                display: 'flex',
+                gap: '50px',
+            }}>
+                <div onClick={handleGoToHomePage} style={{
+                    color: 'black'
+                }}>
+                    KISS OR KICK
+                </div>
+
+                <div onClick={handleGoToDashBoardPage} style={{
+                    color: 'black'
+                }}>
+                    DashBoard
+                </div>
             </div>
 
             {(!isLogin) && (
@@ -166,7 +179,7 @@ const App: React.FC<HeaderProps> = () => {
                     </div>
 
                 </Modal>
-                </div>
+            </div>
                 )
             }
 

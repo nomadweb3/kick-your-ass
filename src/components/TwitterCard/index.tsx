@@ -3,12 +3,10 @@ import "./index.css";
 import { Button, Space, notification } from "antd";
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { idlFactory as backendIDL } from "../../dids/backend.did";
-import type { NotificationPlacement } from "antd/es/notification/interface";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   Result as FuncResult,
-  Error as canisterFuncError,
 } from "../../dids/service";
 import avatarPNG from "../../assets/logo.jpeg";
 import InfoCard from "../Basic/InfoCard";
@@ -48,7 +46,7 @@ export async function fetchUserTwitterInfo(
       username: response.data.username,
       profilePicUrl: response.data.profile_pic_url,
     };
-    console.log("fetchUserTwitterInfo : ", response.data);
+    // console.log("fetchUserTwitterInfo : ", response.data);
     return userTwitterInfo;
   } catch (error) {
     console.error("fetchUserTwitterInfo : ", error);
@@ -90,7 +88,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
       });
       return actor;
     } else {
-      toast.error("please Login !");
+      toast.warning("Saving your Kick data by logging in !");
       return null;
     }
   };
@@ -115,8 +113,8 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     const noIdentityActor = getNoIdentiyActor();
     const kickResult = await noIdentityActor.getKickByHandle(twitterHandle);
     const kissResult = await noIdentityActor.getKissByHandle(twitterHandle);
-    console.log("getKickByHandle result : ", kickResult);
-    console.log("getKissByHandle result : ", kissResult);
+    // console.log("getKickByHandle result : ", kickResult);
+    // console.log("getKissByHandle result : ", kissResult);
     setKickCount(Number(kickResult));
     setKissCount(Number(kissResult));
   };
@@ -173,7 +171,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
       const createResult = (await noIdentityActor.create(
         twitterHandle
       )) as FuncResult;
-      console.log("createResult : ", createResult);
+      // console.log("createResult : ", createResult);
       if ("ok" in createResult) {
         setImportSuccess(true);
         queryTheHandleCount();
@@ -182,7 +180,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
       } else {
         setImportSuccess(false);
         toast.error(Object.keys(createResult.err)[0]);
-        console.log(Object.keys(createResult.err)[0]);
+        // console.log(Object.keys(createResult.err)[0]);
       }
     }
   };
@@ -197,10 +195,10 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     if (identityActor == null) return;
 
     toast.info("Kiss ing !");
-    console.log("kiss identity : ", identity?.getPrincipal().toString());
+    // console.log("kiss identity : ", identity?.getPrincipal().toString());
 
     const kissResult = (await identityActor.kiss(twitterHandle, Date.now() * 1e6)) as FuncResult;
-    console.log("Kiss : ", kissResult);
+    // console.log("Kiss : ", kissResult);
     if ("ok" in kissResult) {
       queryTheHandleCount();
       toast.success("Kiss Success !");
@@ -221,10 +219,10 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
     if (identityActor == null) return;
 
     toast.info("Kick ing !");
-    console.log("kick identity : ", identity?.getPrincipal().toString());
+    // console.log("kick identity : ", identity?.getPrincipal().toString());
 
     const kickResult = (await identityActor.kick(twitterHandle, Date.now() * 1e6)) as FuncResult;
-    console.log("Kick : ", kickResult);
+    // console.log("Kick : ", kickResult);
     if ("ok" in kickResult) {
       queryTheHandleCount();
       toast.success("Kick Success !");
@@ -404,11 +402,11 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
         <div className="button">
           <button className="kick shake" onClick={onKickAss}>
             <span className="icon iconfont">&#xe671;</span>
-            <div className="title">KICK ASS</div>
+            <div className="title">KICK</div>
           </button>
           <button className="kiss shake-chunk" onClick={onKissFace}>
             <span className="icon iconfont">&#xe665;</span>
-            <div className="title ">KISS FACE</div>
+            <div className="title ">KISS</div>
           </button>
         </div>
       </div>
@@ -459,9 +457,7 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
             />
           </div>
           <div className="count">Get {kissCount}</div>
-          <div className="kiss">
-            <div className="title">kiss</div>
-          </div>
+          <div className="kiss-title">kiss</div>
         </div>
       )}
       {importSuccess && (
@@ -473,28 +469,9 @@ const TwitterCard: React.FC<TwitterCardProps> = ({
             />
           </div>
           <div className="count">Get {kickCount}</div>
-          <div className="kick">
-            <div className="title">KICK</div>
-          </div>
+          <div className="kick-title">KICK</div>
         </div>
       )}
-      {/* {importSuccess && (
-        <div className="kiss-kick-container">
-          <div className="box">
-            <InfoCard
-              avatarUrl={
-                ""
-                // userTwitterInfo ? userTwitterInfo.profilePicUrl : avatarPNG
-              }
-              name={twitterHandle}
-            />
-          </div>
-          <div className="count">Get {kickCount}</div>
-          <div className="kick">
-            <div className="title">KICK</div>
-          </div>
-        </div>
-      )} */}
     </div>
   );
 };

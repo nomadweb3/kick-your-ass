@@ -16,17 +16,6 @@ const AGENT_OPTIONS = { host: 'https://ic0.app' };
 const agent = new HttpAgent(AGENT_OPTIONS);
 const actor = Actor.createActor(backendIDL, { agent, canisterId: CANISTER_ID });
 
-const layOutStyle: React.CSSProperties = {
-    height: '100%',
-};
-
-const contentStyle: React.CSSProperties = {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-};
-
 interface DataType {
     key: string;
     userInfo: {
@@ -48,21 +37,20 @@ const columns: ColumnsType<DataType> = [
         title: 'Twitter Info',
         dataIndex: 'userInfo',
         key: 'userInfo',
-        width: 150,
+        width: 200,
         align: 'center',
         render: (info) => {
             // console.log('info.profilePicURL ', info.profilePicURL);
             return (
-                
                 <InfoCard avatarUrl={info.profilePicURL} name={info.name} />
             );
         }
     },
     {
-        title: 'Kiss Count',
+        title: 'Count',
         dataIndex: 'value',
         key: 'value',
-        width: 90,
+        width: 60,
         align: 'center'
     }
 ]
@@ -82,7 +70,7 @@ const KissRanking: React.FC<KissRankingProps> = (
           try {
             const kissArray = (await actor.getKisssFromLargeToSmall()) as [string, bigint][];
             setKissData(kissArray);
-            console.log('kissArray : ', kissArray);
+            // console.log('kissArray : ', kissArray);
             setDataLoaded(false); // 数据加载完成后设置状态为true
 
             const userInfoPromises = kissArray.map(async ([userName, value], index) => {
@@ -125,7 +113,7 @@ const KissRanking: React.FC<KissRankingProps> = (
         <Table
             columns={columns}
             dataSource={dataSourece}
-            pagination={false}
+            // pagination={false}
             scroll={{y: 600}} 
             title={
                 () => <span style={{
@@ -143,7 +131,7 @@ const KissRanking: React.FC<KissRankingProps> = (
             loading={dataLoaded}
             size='middle'
             style={{
-                width: '320px',
+                width: '370px',
                 marginLeft: '80px',
             }}
         />
@@ -166,7 +154,7 @@ export const KickRanking: React.FC<KickRankingProps> = (
           try {
             const kickArray = (await actor.getKicksFromLargeToSmall()) as [string, bigint][];
             setKickData(kickArray);
-            console.log('kickArray : ', kickArray);
+            // console.log('kickArray : ', kickArray);
             setDataLoaded(false); // 数据加载完成后设置状态为true
 
             const userInfoPromises = kickArray.map(async ([userName, value], index) => {
@@ -208,7 +196,7 @@ export const KickRanking: React.FC<KickRankingProps> = (
         <Table
             columns={columns}
             dataSource={dataSourece}
-            pagination={false}
+            // pagination={false}
             scroll={{y: 600}} 
             title={
                 () => <span style={{
@@ -226,7 +214,7 @@ export const KickRanking: React.FC<KickRankingProps> = (
             loading={dataLoaded}
             size='middle'
             style={{
-                width: '320px',
+                width: '370px',
                 marginRight: '80px',
             }}
         />

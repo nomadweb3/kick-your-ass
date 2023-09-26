@@ -178,6 +178,25 @@ actor {
 
   public query({caller}) func get_DAY_CLICK_AMOUNT(): async Nat { DAY_CLICK_AMOUNT };
 
+  public query({caller}) func getUserClickAmoutMapEntries(): async [(Principal, ClickAmoutMetaData)] {
+    Iter.toArray(userClickAmoutMap.entries())
+  };
+
+  public query({caller}) func getClickInfosEntries(): async [(Principal, [ClickData])] {
+    Iter.toArray(TrieMap.map<Principal, TrieSet.Set<ClickData>, [ClickData]>(
+      clickInfos,
+      Principal.equal,
+      Principal.hash,
+      func(k, v1): [ClickData] {
+        TrieSet.toArray(v1)
+      }
+    ).entries())
+  };
+
+  public query({caller}) func getTwitterInfosEntries(): async [(Text, TwitterMetaData)] {
+    Iter.toArray(twitterInfos.entries())
+  };
+
   private func isAnonymous(caller: Principal): Bool {
     Principal.isAnonymous(caller)
   };

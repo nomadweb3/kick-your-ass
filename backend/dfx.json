@@ -3,6 +3,10 @@
     "backend": {
       "main": "src/main.mo",
       "type": "motoko"
+    },
+    "backend-dev": {
+      "main": "src/main.mo",
+      "type": "motoko"
     }
   },
   "defaults": {

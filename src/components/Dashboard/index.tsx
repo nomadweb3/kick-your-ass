@@ -3,6 +3,7 @@ import { Col, Row, Statistic } from 'antd';
 import { HttpAgent, Actor } from '@dfinity/agent';
 import { idlFactory as backendIDL } from '../../dids/backend.did';
 import { useEffect, useState } from 'react';
+import Header from '../Header';
 
 const formatter = (value: number) => <CountUp end={value} separator="," />;
 const agent = new HttpAgent({
@@ -33,17 +34,26 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <Row gutter={16}>
-    <Col span={12}>
-      <Statistic title="Acc. Kicks " value={totalKick} formatter={formatter} />
-    </Col>
-    <Col span={12}>
-      <Statistic title="Acc. Kisses " value={totalKiss} formatter={formatter} />
-    </Col>
-    <Col span={12}>
-      <Statistic title="Total Users" value={totalUser} formatter={formatter} />
-    </Col>
-  </Row>
+    <>
+        <Header/>
+        <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+        }}>
+            <Row gutter={16}>
+                <Col span={12}>
+                    <Statistic title="Acc. Kicks " value={totalKick} formatter={formatter} />
+                </Col>
+                <Col span={12}>
+                    <Statistic title="Acc. Kisses " value={totalKiss} formatter={formatter} />
+                </Col>
+                <Col span={12}>
+                    <Statistic title="Total Users" value={totalUser} formatter={formatter} />
+                </Col>
+            </Row>
+        </div>
+    </>
   );
 }
 
